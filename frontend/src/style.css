@@ -1,0 +1,43 @@
+.hero-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(ellipse at center, #020202 20%, #000000 100%);
+  overflow: hidden;
+}
+
+.hero-text {
+  position: absolute;
+  bottom: 10%;
+  width: 100%;
+  text-align: center;
+  color: #ffffff;
+  font-family: "Poppins", sans-serif;
+  z-index: 10;
+}
+
+.hero-text h1 {
+  font-size: 3.5rem;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  background: linear-gradient(90deg, #00ffff, #7f00ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-text p {
+  font-size: 1.2rem;
+  color: #9eefff;
+  opacity: 0.8;
+}
+
+.preloader {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #000;
+  z-index: 9999;
+  transition: opacity 0.5s ease;
+}

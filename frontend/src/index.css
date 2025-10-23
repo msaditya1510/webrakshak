@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Additional global custom styles */
+html, body, #root {
+  height: 100%;
+  background: radial-gradient(circle at center, #070b1a, #000);
+  color: #fff;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.navbar {
+  @apply fixed top-0 left-0 right-0 z-10 flex justify-between items-center p-4 px-8 bg-black/30 backdrop-blur-sm font-bold tracking-wide text-white;
+}
+
+.logo {
+  @apply text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-500 to-pink-400 text-xl;
+}
+
+.toggle {
+  @apply w-14 h-7 rounded-full cursor-pointer bg-gradient-to-r from-purple-700 to-pink-600 relative transition;
+}
+
+.toggle-night {
+  @apply bg-gradient-to-r from-green-400 to-green-700;
+}
+
+.toggle::after {
+  content: '';
+  @apply absolute top-1.5 left-1.5 w-5 h-5 bg-white rounded-full transition-transform;
+}
+
+.toggle-night::after {
+  @apply translate-x-7;
+}
+
+.title {
+  @apply relative mt-4 text-center text-3xl font-extrabold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white via-purple-600 to-indigo-900;
+}
+
+.scanners-wrapper {
+  @apply max-w-4xl mx-auto my-10 px-6 flex flex-col gap-10;
+}
+
+.scanner-section {
+  @apply bg-[#1A202E] rounded-lg p-6 shadow-lg shadow-purple-700/40;
+}
+
+.scanner-section h2 {
+  @apply mb-3 font-extrabold text-purple-400;
+}
+
+input[type="file"],
+input[type="url"] {
+  @apply w-full p-2 rounded bg-gray-900 text-white border border-gray-700;
+}
+
+button {
+  @apply mt-2 px-5 py-2 rounded font-semibold bg-gradient-to-r from-green-400 to-green-600 text-black hover:from-green-500 hover:to-green-700 transition;
+}
+
+button:disabled {
+  @apply bg-gray-700 cursor-not-allowed text-gray-400;
+}
+
+.verdict {
+  @apply mt-2 text-lg font-bold;
+}
+
+.verdict.safe {
+  @apply text-green-400;
+}
+
+.verdict.danger {
+  @apply text-red-400;
+}
