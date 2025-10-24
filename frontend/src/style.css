@@ -1,36 +1,95 @@
+
+/* ===== Global Reset ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: radial-gradient(ellipse at center, #050505 20%, #000 100%);
+  font-family: "Poppins", sans-serif;
+  overflow-x: hidden;
+  color: #fff;
+}
+
+/* ===== Hero Section ===== */
 .hero-container {
   position: relative;
   width: 100vw;
   height: 100vh;
-  background: radial-gradient(ellipse at center, #020202 20%, #000000 100%);
+  background: radial-gradient(ellipse at center, #0a0a0a 20%, #000000 100%);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
-.hero-text {
-  position: absolute;
-  bottom: 10%;
-  width: 100%;
-  text-align: center;
-  color: #ffffff;
-  font-family: "Poppins", sans-serif;
-  z-index: 10;
-}
-
+/* Platinum-Icy Text Shine */
 .hero-text h1 {
-  font-size: 3.5rem;
-  letter-spacing: 0.05em;
-  font-weight: 700;
-  background: linear-gradient(90deg, #00ffff, #7f00ff);
+  font-size: 4rem;
+  letter-spacing: 0.06em;
+  font-weight: 800;
+  text-transform: uppercase;
+  background: linear-gradient(
+    120deg,
+    #e6f7ff 10%,
+    #b3e0ff 30%,
+    #d4ffff 45%,
+    #a3a3a3 60%,
+    #ffffff 90%
+  );
+  background-size: 300%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  animation: metallic-shine 4s linear infinite;
+  filter: drop-shadow(0 0 10px rgba(180, 255, 255, 0.6));
 }
 
 .hero-text p {
   font-size: 1.2rem;
-  color: #9eefff;
-  opacity: 0.8;
+  color: #a8faff;
+  opacity: 0.85;
+  margin-top: 1rem;
+  letter-spacing: 0.02em;
 }
 
+/* ===== Metallic Shine Animation ===== */
+@keyframes metallic-shine {
+  0% {
+    background-position: 0%;
+  }
+  100% {
+    background-position: 300%;
+  }
+}
+
+/* ===== Frosted Glass Style Buttons ===== */
+.scan-btn {
+  margin-top: 2.5rem;
+  padding: 1rem 2.2rem;
+  border: 2px solid rgba(200, 255, 255, 0.4);
+  border-radius: 50px;
+  color: #e0ffff;
+  font-size: 1.1rem;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.25),
+              inset 0 0 10px rgba(255, 255, 255, 0.1);
+  transition: all 0.4s ease;
+  cursor: pointer;
+}
+
+.scan-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.05);
+  border-color: #00ffff;
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.4),
+              inset 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+/* ===== Preloader ===== */
 .preloader {
   position: fixed;
   inset: 0;
@@ -39,5 +98,62 @@
   justify-content: center;
   background-color: #000;
   z-index: 9999;
-  transition: opacity 0.5s ease;
+  transition: opacity 0.6s ease;
+}
+
+.loader-ring {
+  width: 80px;
+  height: 80px;
+  border: 6px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #00ffff;
+  border-radius: 50%;
+  animation: spin 1.2s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===== Section Wrapper (for multiple scan pages) ===== */
+.section {
+  min-height: 100vh;
+  padding: 80px 5%;
+  background: linear-gradient(to bottom, #000000, #0b0b0b);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ===== Section Headings ===== */
+.section h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(90deg, #00ffff, #b3e0ff, #ffffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: metallic-shine 5s linear infinite;
+}
+
+/* ===== Frosted Cards (for Dashboard / Result / News) ===== */
+.card {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 2rem;
+  width: 80%;
+  max-width: 800px;
+  margin: 1.5rem auto;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.15);
+  color: #e8ffff;
+}
+
+.card:hover {
+  box-shadow: 0 0 40px rgba(0, 255, 255, 0.35);
+  transform: translateY(-4px);
+  transition: all 0.4s ease;
 }
