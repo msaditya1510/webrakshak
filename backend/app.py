@@ -291,6 +291,6 @@ with col1:
 with col2:
     st.markdown("**Powered by Community AI**")
 with col3:
-    st.markdown("[GitHub](https://github.com/OnArchit/WebRakshak) | [Docs](https://docs.webrakshak.ai)")
+    st.markdown("[GitHub](https://github.com/msaditya1510/webrakshak) | [Docs](https://docs.webrakshak.ai)")
 
 logger.info("✅ WebRakshak deployed successfully!")
