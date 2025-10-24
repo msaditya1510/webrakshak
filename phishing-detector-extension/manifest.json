@@ -1,0 +1,26 @@
+{
+    "manifest_version":3,
+    "name":"Phishing-detector",
+    "version":"1.0",
+    "action":{
+        "default_popup":"popup.html",
+        "default_icon": {
+            "16": "icon16.png",
+            "48": "icon48.png",
+            "128": "icon128.png"
+        }
+    },
+    "icons": {
+        "16": "icon16.png",
+        "48": "icon48.png", 
+        "128": "icon128.png"
+    },
+    "host_permissions": ["<all_urls>"],
+    "permissions":["activeTab","storage","tabs"],
+    "background":{
+        "service_worker":"background.js",
+        "scripts": ["config.js", "background.js"]
+
+    },
+    "description":"This extension is used to scan the url that the user tries to visit beforehand so that any phishing attack on the user won't happen"
+}
