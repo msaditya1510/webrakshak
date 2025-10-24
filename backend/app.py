@@ -83,7 +83,7 @@ def load_models():
     image_model = None
     
     try:
-        url_model = joblib.load("url_model/url_model.joblib")
+        url_model = joblib.load("url_model/model_compressed.joblib")
         st.success("✅ URL model loaded successfully!")
         logger.info("URL model loaded")
     except Exception as e:
@@ -91,7 +91,7 @@ def load_models():
         logger.warning(f"URL model load failed: {e}")
     
     try:
-        image_model = tf.keras.models.load_model("image_model/image_model.keras")
+        image_model = tf.keras.models.load_model("image_model/image_model.tflite")
         st.success("✅ Image model loaded successfully!")
         logger.info("Image model loaded")
     except Exception as e:
@@ -152,7 +152,7 @@ def retrain_url_model():
         else:
             url_model.fit(X, y)  # Full retrain; adjust if needed
         
-        joblib.dump(url_model, "url_model/url_model.joblib")
+        joblib.dump(url_model, "url_model/model_compressed.joblib")
         st.cache_resource.clear()  # Clear cache to reload model
         logger.info(f"URL model retrained on {len(url_data)} samples")
         return f"✅ Retrained URL model on {len(url_data)} samples!"
