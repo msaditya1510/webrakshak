@@ -388,3 +388,6 @@ with col2:
     st.markdown("**Powered by Community AI**")
 with col3:
     st.markdown("[GitHub](https://github.com/OnArchit/WebRakshak) | [Docs](https://docs.webrakshak.ai)")
+# ----------------- Deployment Log -----------------
+logger.info("✅ WebRakshak successfully deployed and ready for use!")
+print("✅ WebRakshak successfully deployed and ready for use!")  # Optional, ensures visibility in Streamlit console
