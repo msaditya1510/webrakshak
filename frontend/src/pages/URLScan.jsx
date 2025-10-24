@@ -6,7 +6,8 @@ export default function URLScan() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const BACKEND_URL = "https://webrakshak.onrender.com/"; // FastAPI backend
+  //const BACKEND_URL = "https://webrakshak.onrender.com/"; // FastAPI backend
+  const BACKEND_URL = "https://cryptchat2.onrender.com"; // FastAPI backend
 
   const handleScan = async () => {
     if (!url) {

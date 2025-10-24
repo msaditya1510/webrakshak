@@ -6,7 +6,8 @@ export default function EmailScan() {
 
   const handleScan = async () => {
     if (!emailText) return;
-    const res = await fetch("https://webrakshak.onrender.com/api/scan_email", {
+    // const res = await fetch("https://webrakshak.onrender.com/api/scan_email", {
+    const res = await fetch("https://cryptchat2.onrender.com/api/scan_email", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text: emailText }),

@@ -3,20 +3,20 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useGLTF, Html, OrbitControls, Environment } from "@react-three/drei";
 import { useNavigate } from "react-router-dom";
 import * as THREE from "three";
+import { motion } from "framer-motion";
 import EngagementSection from "./components/EngagementSection.jsx";
 import VotePhishSection from "./components/VotePhishSection.jsx";
 import RecentNewsSection from "./components/RecentNewsSection.jsx";
 import MetricsOverview from "./components/MetricsOverview.jsx";
 import ContactUs from "./components/ContactUs.jsx";
 import logo1 from "/logo1.png";
-import { motion } from "framer-motion";
 import "./style.css";
 
-// ---------------- Navbar ----------------
+/* ---------------- Navbar ---------------- */
 function Navbar() {
   const [hoveredIndex, setHoveredIndex] = useState(null);
-  const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 50);
@@ -43,7 +43,6 @@ function Navbar() {
         maxWidth: 1200,
         fontFamily: "'Public Sans', Arial, sans-serif",
         color: "white",
-        userSelect: "none",
         backgroundColor: isScrolled ? "rgba(26,26,26,0.85)" : "transparent",
         border: isScrolled ? "1px solid rgba(255,255,255,0.1)" : "none",
       }}
@@ -60,7 +59,7 @@ function Navbar() {
         />
         <motion.span
           style={{
-            fontWeight: "900",
+            fontWeight: 900,
             fontSize: "1.5rem",
             background: "linear-gradient(90deg, #a855f7, #ffffff)",
             WebkitBackgroundClip: "text",
@@ -74,38 +73,35 @@ function Navbar() {
       </div>
 
       <div className="flex ml-auto gap-4 font-semibold text-base flex-wrap justify-end">
-        {navButtons.map((btn, idx) => {
-          const isHovered = hoveredIndex === idx;
-          return (
-            <motion.button
-              key={idx}
-              onClick={() => navigate(btn.path)}
-              onMouseEnter={() => setHoveredIndex(idx)}
-              onMouseLeave={() => setHoveredIndex(null)}
-              className="cursor-pointer rounded-md px-3 py-1 select-none border-2 border-transparent bg-transparent text-white"
-              style={{
-                fontWeight: isHovered ? 700 : 500,
-                backgroundImage: isHovered
+        {navButtons.map((btn, idx) => (
+          <motion.button
+            key={idx}
+            onClick={() => navigate(btn.path)}
+            onMouseEnter={() => setHoveredIndex(idx)}
+            onMouseLeave={() => setHoveredIndex(null)}
+            className="cursor-pointer rounded-md px-3 py-1 select-none border-2 border-transparent bg-transparent text-white"
+            style={{
+              fontWeight: hoveredIndex === idx ? 700 : 500,
+              backgroundImage:
+                hoveredIndex === idx
                   ? "linear-gradient(90deg, #7b5cf5, #a855f7, #d8b4fe)"
                   : "none",
-                boxShadow: isHovered ? "0 4px 12px #a855f7bb" : "none",
-                color: "white",
-                outline: "none",
-                transition: "all 0.3s ease",
-                whiteSpace: "nowrap",
-              }}
-              whileTap={{ scale: 0.95 }}
-            >
-              {btn.name}
-            </motion.button>
-          );
-        })}
+              boxShadow:
+                hoveredIndex === idx ? "0 4px 12px #a855f7bb" : "none",
+              transition: "all 0.3s ease",
+              whiteSpace: "nowrap",
+            }}
+            whileTap={{ scale: 0.95 }}
+          >
+            {btn.name}
+          </motion.button>
+        ))}
       </div>
     </nav>
   );
 }
 
-// ---------------- 3D Logo ----------------
+/* ---------------- 3D Logo ---------------- */
 function Logo() {
   const texture = new THREE.TextureLoader().load("/logo.png");
   const { viewport } = useThree();
@@ -126,10 +122,11 @@ function Logo() {
   );
 }
 
-// ---------------- 3D Scene Model ----------------
+/* ---------------- 3D Scene Model ---------------- */
 function SceneModel() {
   const { scene } = useGLTF("/models/scene.glb");
   const ref = useRef();
+
   useEffect(() => {
     scene.traverse((child) => {
       if (child.isMesh) {
@@ -156,10 +153,17 @@ function SceneModel() {
     if (ref.current) ref.current.rotation.y += 0.003;
   });
 
-  return <primitive ref={ref} object={scene} dispose={null} position={[0, -0.2, 0]} />;
+  return (
+    <primitive
+      ref={ref}
+      object={scene}
+      dispose={null}
+      position={[0, -0.2, 0]}
+    />
+  );
 }
 
-// ---------------- Hero Section ----------------
+/* ---------------- Hero Section ---------------- */
 function HeroSection() {
   return (
     <div className="relative w-full h-screen">
@@ -196,7 +200,7 @@ function HeroSection() {
   );
 }
 
-// ---------------- Buffering Shield ----------------
+/* ---------------- Buffering Shield ---------------- */
 function BufferingShield({ onComplete }) {
   const [progress, setProgress] = useState(0);
   useEffect(() => {
@@ -238,20 +242,44 @@ function BufferingShield({ onComplete }) {
   );
 }
 
-// ---------------- Security Section ----------------
+/* ---------------- Security Section ---------------- */
 function SecuritySection() {
   const [activeTool, setActiveTool] = useState("url-scan");
   const [inputValue, setInputValue] = useState("");
   const [result, setResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const BACKEND_URL = "https://webrakshak.onrender.com/"; // Backend API URL
+  const BACKEND_URL = "https://cryptchat2.onrender.com";
 
   const tools = {
-    "url-scan": { title: "URL Scanner", placeholder: "Enter URL to scan", apiPath: "/api/scan-url", inputType: "url" },
-    "email-scan": { title: "Email Scanner", placeholder: "Paste email content", apiPath: "/api/scan-email", inputType: "textarea" },
-    "image-scan": { title: "Image Scanner", placeholder: null, apiPath: "/api/scan-image", inputType: "file" },
-    "voice-scan": { title: "Voice Scanner", placeholder: null, apiPath: "/api/scan-voice", inputType: "file" },
+    "url-scan": {
+      title: "URL Scanner",
+      placeholder: "Enter URL",
+      apiPath: "/scan/url",
+      inputType: "url",
+      bodyKey: "url",
+    },
+    "email-scan": {
+      title: "Email Scanner",
+      placeholder: "Paste email content",
+      apiPath: "/scan/email",
+      inputType: "textarea",
+      bodyKey: "email",
+    },
+    "image-scan": {
+      title: "Image Scanner",
+      placeholder: null,
+      apiPath: "/scan/image",
+      inputType: "file",
+      bodyKey: "image",
+    },
+    "voice-scan": {
+      title: "Voice Scanner",
+      placeholder: null,
+      apiPath: "/scan/voice",
+      inputType: "file",
+      bodyKey: "audio",
+    },
   };
 
   const handleScan = async () => {
@@ -261,36 +289,49 @@ function SecuritySection() {
 
     try {
       let response;
-      if (tools[activeTool].inputType === "file") {
+      const tool = tools[activeTool];
+
+      if (tool.inputType === "file") {
         const fileInput = document.querySelector('input[type="file"]');
         if (!fileInput?.files?.length) throw new Error("No file selected");
         const formData = new FormData();
-        formData.append(activeTool === "image-scan" ? "image" : "audio", fileInput.files[0]);
-        response = await fetch(`${BACKEND_URL}${tools[activeTool].apiPath}`, { method: "POST", body: formData });
+        formData.append(tool.bodyKey, fileInput.files[0]);
+        response = await fetch(`${BACKEND_URL}${tool.apiPath}`, {
+          method: "POST",
+          body: formData,
+        });
       } else {
-        response = await fetch(`${BACKEND_URL}${tools[activeTool].apiPath}`, {
+        response = await fetch(`${BACKEND_URL}${tool.apiPath}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ data: inputValue }),
+          body: JSON.stringify({ [tool.bodyKey]: inputValue }),
         });
       }
+
       const data = await response.json();
       setResult(data);
     } catch (err) {
       setResult({ error: err.message || "Unknown error" });
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (
     <section className="px-4 py-20 max-w-3xl mx-auto text-center text-white">
-      <h2 className="text-3xl sm:text-4xl font-bold mb-6 text-[#a855f7]">Security Tools</h2>
+      <h2 className="text-3xl sm:text-4xl font-bold mb-6 text-[#a855f7]">
+        Security Tools
+      </h2>
 
       <div className="flex flex-wrap justify-center gap-3 mb-6">
         {Object.entries(tools).map(([key, tool]) => (
           <button
             key={key}
-            onClick={() => { setActiveTool(key); setInputValue(""); setResult(null); }}
+            onClick={() => {
+              setActiveTool(key);
+              setInputValue("");
+              setResult(null);
+            }}
             className={`px-4 py-2 rounded-full font-semibold transition-colors ${
               activeTool === key ? "bg-[#a855f7]" : "bg-[#333]"
             }`}
@@ -305,7 +346,9 @@ function SecuritySection() {
           <input
             type="file"
             accept={activeTool === "image-scan" ? "image/*" : "audio/*"}
-            onChange={(e) => setInputValue(e.target.files ? e.target.files[0] : "")}
+            onChange={(e) =>
+              setInputValue(e.target.files ? e.target.files[0] : "")
+            }
             className="w-full p-3 rounded-lg border border-[#a855f7] bg-[#12131a] text-white text-base"
           />
         ) : tools[activeTool].inputType === "textarea" ? (
@@ -333,22 +376,40 @@ function SecuritySection() {
         onClick={handleScan}
         disabled={isLoading || (!inputValue && tools[activeTool].inputType !== "file")}
         className={`w-full max-w-xs mx-auto block px-6 py-3 rounded-full font-bold ${
-          isLoading ? "bg-gray-600 cursor-not-allowed" : "bg-[#a855f7] cursor-pointer"
+          isLoading
+            ? "bg-gray-600 cursor-not-allowed"
+            : "bg-[#a855f7] cursor-pointer"
         }`}
       >
         {isLoading ? "Scanning..." : "Scan"}
       </motion.button>
 
       {result && (
-        <div className="mt-8 p-4 rounded-lg bg-[#12131a] text-left text-sm sm:text-base overflow-x-auto text-[#a855f7]">
-          {result.error ? `Error: ${result.error}` : JSON.stringify(result, null, 2)}
-        </div>
-      )}
+  <div className="mt-8 p-6 rounded-lg bg-[#12131a] text-center text-white">
+    {result.error ? (
+      <p className="text-red-400 font-semibold">Error: {result.error}</p>
+    ) : (
+      <>
+        <p
+          className={`text-2xl font-bold ${
+            result.is_phishing ? "text-red-500" : "text-green-400"
+          }`}
+        >
+          {result.is_phishing ? "⚠️ Phishing Detected!" : "✅ Safe URL"}
+        </p>
+        <p className="text-sm mt-2 text-gray-400">
+          Confidence: {(result.confidence * 100).toFixed(2)}%
+        </p>
+      </>
+    )}
+  </div>
+)}
+
     </section>
   );
 }
 
-// ---------------- Main App ----------------
+/* ---------------- Main App ---------------- */
 export default function App() {
   const [loaded, setLoaded] = useState(false);
 
@@ -367,7 +428,9 @@ export default function App() {
           <ContactUs />
           <footer className="mt-16 bg-[#0A0C14] p-10 text-gray-400 text-center text-sm max-w-5xl mx-auto border-t border-gray-900 font-sans">
             <p>
-              Checkphish provides free online security tools for mitigating typosquatting, domain, and phishing risks. Join the thousands of active security professionals today!
+              Checkphish provides free online security tools for mitigating
+              typosquatting, domain, and phishing risks. Join the thousands of
+              active security professionals today!
             </p>
           </footer>
         </>

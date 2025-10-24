@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
-const BACKEND_URL = "https://webrakshak.onrender.com/"; // FastAPI backend URL
+//const BACKEND_URL = "https://webrakshak.onrender.com/"; // FastAPI backend URL
+const BACKEND_URL = "https://cryptchat2.onrender.com"; // FastAPI backend URL
 
 export default function SecuritySection() {
   const [url, setUrl] = useState("");
