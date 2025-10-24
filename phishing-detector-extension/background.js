@@ -1,3 +1,7 @@
+// Replace with your actual API key before using
+const VIRUSTOTAL_API_KEY = "YOUR_VIRUSTOTAL_API_KEY_HERE";
+const VIRUSTOTAL_URL = "https://www.virustotal.com/vtapi/v2/url/report";
+
 const allowedUrls = new Set();
 const processingUrls = new Set();
 const urlDelays = new Map();
@@ -36,7 +40,7 @@ function isDomainSafe(url) {
 async function checkURLWithVirusTotal(url) {
     console.log("Function called with URL:", url);
     try {
-       const response = await fetch(`${CONFIG.VIRUSTOTAL_URL}?apikey=${CONFIG.VIRUSTOTAL_API_KEY}&resource=${encodeURIComponent(url)}`);
+        const response = await fetch(`${VIRUSTOTAL_URL}?apikey=${VIRUSTOTAL_API_KEY}&resource=${encodeURIComponent(url)}`);
         const data = await response.json();
         
         console.log("VirusTotal response:", data);

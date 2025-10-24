@@ -12,8 +12,9 @@ A Chrome extension that protects users from phishing attacks by scanning URLs in
 
 ## 🚀 Setup
 
-1. Clone repo and add your VirusTotal API key to `config.js`
-2. Load extension in Chrome (`chrome://extensions/` → Developer mode → Load unpacked)
+1. Clone repo
+2. Replace `YOUR_VIRUSTOTAL_API_KEY_HERE` in `background.js` with your actual VirusTotal API key
+3. Load extension in Chrome (`chrome://extensions/` → Developer mode → Load unpacked)
 
 ## 🔧 How It Works
 
