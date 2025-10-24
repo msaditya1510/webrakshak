@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const BACKEND_URL = "http://127.0.0.1:8000"; // FastAPI backend URL
+const BACKEND_URL = "https://webrakshak.onrender.com/"; // FastAPI backend URL
 
 export default function SecuritySection() {
   const [url, setUrl] = useState("");

@@ -11,7 +11,7 @@ export default function VoiceScan() {
     const formData = new FormData();
     formData.append("file", audio);
     try {
-      const res = await fetch("http://127.0.0.1:5000/api/scan_voice", {
+      const res = await fetch("https://webrakshak.onrender.com/api/scan_voice", {
         method: "POST",
         body: formData,
       });

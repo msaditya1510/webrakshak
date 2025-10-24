@@ -8,7 +8,7 @@ export default function VotePhishSection() {
 
   // Fetch recent vote items from backend on mount
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/api/history")
+    fetch("https://webrakshak.onrender.com//api/history")
       .then((res) => res.json())
       .then(setItems)
       .catch(() => setItems([]));
@@ -30,7 +30,7 @@ export default function VotePhishSection() {
     setInputUrl("");
     setInputFile(null);
     setMessage("Submitted! Waiting for votes...");
-    await fetch("http://127.0.0.1:5000/api/store_vote", {
+    await fetch("https://webrakshak.onrender.com//api/store_vote", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newItem),
@@ -53,7 +53,7 @@ export default function VotePhishSection() {
           : item
       )
     );
-    await fetch("http://127.0.0.1:5000/api/store_vote", {
+    await fetch("https://webrakshak.onrender.com//api/store_vote", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...items[index], label: voteType }),
@@ -64,7 +64,7 @@ export default function VotePhishSection() {
   // Automatically trigger retrain request if >10 votes
   useEffect(() => {
     if (items.length > 10) {
-      fetch("http://127.0.0.1:5000/api/retrain", { method: "POST" })
+      fetch("https://webrakshak.onrender.com/api/retrain", { method: "POST" })
         .then((res) => res.json())
         .then((data) => setMessage(data.status));
     }
