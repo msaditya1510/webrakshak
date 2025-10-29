@@ -3,7 +3,6 @@ from flask_cors import CORS
 import numpy as np
 import joblib
 import os
-import requests
 import tensorflow as tf
 from tensorflow.keras.preprocessing import image
 import json
@@ -11,7 +10,6 @@ import json
 # === Flask app setup ===
 app = Flask(__name__)
 
-# Allow both local dev and production origins
 CORS(app, resources={r"/*": {"origins": [
     "https://webrakshak.vercel.app",
     "http://localhost:5173"
@@ -27,47 +25,36 @@ def add_cors_headers(response):
     return response
 
 
-# === MODEL LOCATIONS ON GITHUB (RAW LINKS) ===
-GITHUB_BASE = "https://raw.githubusercontent.com/msaditya1510/webrakshak/main/backend/"
+# === Model Paths ===
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_DIR = os.path.join(BASE_DIR, "models")
 URL_MODEL_FILE = "url_model.joblib"
 IMAGE_MODEL_FILE = "image_model.tflite"
 
-MODEL_DIR = "models"
-os.makedirs(MODEL_DIR, exist_ok=True)
 url_model_path = os.path.join(MODEL_DIR, URL_MODEL_FILE)
 image_model_path = os.path.join(MODEL_DIR, IMAGE_MODEL_FILE)
-
-
-# === Helper: Download model from GitHub raw link ===
-def fetch_from_github(file_name, dest_path):
-    if not os.path.exists(dest_path):
-        print(f"⬇ Downloading {file_name} from GitHub...")
-        url = GITHUB_BASE + file_name
-        r = requests.get(url)
-        if r.status_code == 200:
-            with open(dest_path, "wb") as f:
-                f.write(r.content)
-            print(f"✅ {file_name} saved to {dest_path}")
-        else:
-            print(f"❌ Failed to download {file_name}: {r.status_code}")
-    else:
-        print(f"✅ {file_name} already exists at {dest_path}")
-
-
-# Download models if missing
-fetch_from_github(URL_MODEL_FILE, url_model_path)
-fetch_from_github(IMAGE_MODEL_FILE, image_model_path)
 
 
 # === Load models ===
 print("🔹 Loading models into memory...")
 try:
-    url_model = joblib.load(url_model_path)
-    print("✅ URL model loaded successfully.")
+    url_model_data = joblib.load(url_model_path)
+    if isinstance(url_model_data, dict):
+        url_model = url_model_data.get("model", None)
+        feature_selector = url_model_data.get("feature_selector", None)
+        feature_names = url_model_data.get("feature_names", None)
+        print(f"✅ URL model loaded with {len(feature_names)} features.")
+    else:
+        url_model = url_model_data
+        feature_selector = None
+        feature_names = None
+        print("⚠ URL model is raw estimator only.")
 except Exception as e:
-    print("⚠ URL model load failed:", e)
-    url_model = None
+    print("❌ Failed to load URL model:", e)
+    url_model = feature_selector = feature_names = None
 
+
+# === Load image model ===
 try:
     interpreter = tf.lite.Interpreter(model_path=image_model_path)
     interpreter.allocate_tensors()
@@ -80,14 +67,29 @@ except Exception as e:
     input_details = output_details = None
 
 
-# === URL preprocessing ===
-def preprocess_url(url):
-    url = url.lower()
-    max_len = 200
-    x = [ord(c) for c in url[:max_len]]
-    if len(x) < max_len:
-        x += [0] * (max_len - len(x))
-    return np.array([x])
+# === URL preprocessing (fixed) ===
+def preprocess_url_features(url):
+    """
+    Convert a URL into a numeric vector matching the trained model's feature_names.
+    Uses a placeholder encoding for now (based on ASCII values).
+    """
+    import pandas as pd
+
+    if not feature_names:
+        raise ValueError("Feature names not loaded from model")
+
+    # Convert URL characters to numeric values
+    numeric = [ord(c) % 32 for c in url.lower()]
+
+    # Adjust to match model’s expected feature length
+    if len(numeric) < len(feature_names):
+        numeric += [0] * (len(feature_names) - len(numeric))
+    elif len(numeric) > len(feature_names):
+        numeric = numeric[:len(feature_names)]
+
+    df = pd.DataFrame([numeric], columns=feature_names)
+    print(f"🔍 Preprocessed features: {df.shape}, Expected: {len(feature_names)}")
+    return df
 
 
 # === URL scanning ===
@@ -101,13 +103,19 @@ def scan_url():
         return jsonify({"error": "URL model not loaded"}), 500
 
     try:
-        x = preprocess_url(url)
-        score = float(url_model.predict_proba(x)[0][1])
+        x = preprocess_url_features(url)
+        if feature_selector:
+            x = feature_selector.transform(x)
+        if hasattr(url_model, "predict_proba"):
+            score = float(url_model.predict_proba(x)[0][1])
+        else:
+            score = float(url_model.predict(x)[0])
+        print(f"✅ Prediction success → {url} | Score: {score:.4f}")
     except Exception as e:
-        print("⚠ Prediction failed:", e)
+        print("❌ URL prediction failed:", e)
         score = 0.5
 
-    phishing = score > 0.5
+    phishing = score > 0.6
     color = "red" if phishing else "green" if score < 0.3 else "yellow"
     message = (
         "🚨 Phishing Detected!" if phishing else
@@ -139,7 +147,7 @@ def scan_image():
         print("⚠ Image prediction failed:", e)
         score = 0.5
 
-    phishing = score > 0.5
+    phishing = score > 0.6
     color = "red" if phishing else "green" if score < 0.3 else "yellow"
     message = (
         "🚨 Phishing Image!" if phishing else
@@ -150,7 +158,7 @@ def scan_image():
     return jsonify({"score": score, "status": message, "color": color})
 
 
-# === Feedback (Federated Reinforcement Simulation) ===
+# === Feedback ===
 FEEDBACK_PATH = os.path.join(MODEL_DIR, "reward_memory.json")
 
 @app.route("/feedback/url", methods=["POST"])
@@ -181,7 +189,7 @@ def feedback_url():
 def home():
     return jsonify({
         "status": "running",
-        "message": "Backend active with GitHub-hosted models and feedback learning."
+        "message": "Backend active with locally hosted models and feature selector."
     })
 
 

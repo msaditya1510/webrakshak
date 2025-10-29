@@ -154,12 +154,7 @@ function SceneModel() {
   });
 
   return (
-    <primitive
-      ref={ref}
-      object={scene}
-      dispose={null}
-      position={[0, -0.2, 0]}
-    />
+    <primitive ref={ref} object={scene} dispose={null} position={[0, -0.2, 0]} />
   );
 }
 
@@ -200,48 +195,6 @@ function HeroSection() {
   );
 }
 
-/* ---------------- Buffering Shield ---------------- */
-function BufferingShield({ onComplete }) {
-  const [progress, setProgress] = useState(0);
-  useEffect(() => {
-    let start;
-    const animate = (t) => {
-      if (!start) start = t;
-      const p = Math.min((t - start) / 3000, 1);
-      setProgress(p);
-      if (p < 1) requestAnimationFrame(animate);
-      else onComplete();
-    };
-    requestAnimationFrame(animate);
-  }, [onComplete]);
-  const shieldPath = "M50 5 L90 20 L80 90 L50 95 L20 90 L10 20 Z";
-  const length = 300;
-  return (
-    <div className="flex justify-center items-center h-screen bg-[#0A0C14]">
-      <svg width="120" height="120" viewBox="0 0 100 100">
-        <path
-          d={shieldPath}
-          fill="none"
-          stroke="#00ffff"
-          strokeWidth="4"
-          strokeDasharray={length}
-          strokeDashoffset={length * (1 - progress)}
-        />
-        <text
-          x="50"
-          y="55"
-          textAnchor="middle"
-          fill="#00ffff"
-          fontSize="14"
-          fontWeight="bold"
-        >
-          {`${Math.round(progress * 100)}%`}
-        </text>
-      </svg>
-    </div>
-  );
-}
-
 /* ---------------- Security Section ---------------- */
 function SecuritySection() {
   const [activeTool, setActiveTool] = useState("url-scan");
@@ -249,8 +202,7 @@ function SecuritySection() {
   const [result, setResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // const BACKEND_URL = "https://cryptchat2.onrender.com";
-  const BACKEND_URL = "http://127.0.0.1:5000";
+  const BACKEND_URL = "https://webrakshak.onrender.com";
 
   const tools = {
     "url-scan": {
@@ -260,26 +212,12 @@ function SecuritySection() {
       inputType: "url",
       bodyKey: "url",
     },
-    "email-scan": {
-      title: "Email Scanner",
-      placeholder: "Paste email content",
-      apiPath: "/scan/email",
-      inputType: "textarea",
-      bodyKey: "email",
-    },
     "image-scan": {
       title: "Image Scanner",
       placeholder: null,
       apiPath: "/scan/image",
       inputType: "file",
       bodyKey: "image",
-    },
-    "voice-scan": {
-      title: "Voice Scanner",
-      placeholder: null,
-      apiPath: "/scan/voice",
-      inputType: "file",
-      bodyKey: "audio",
     },
   };
 
@@ -352,14 +290,6 @@ function SecuritySection() {
             }
             className="w-full p-3 rounded-lg border border-[#a855f7] bg-[#12131a] text-white text-base"
           />
-        ) : tools[activeTool].inputType === "textarea" ? (
-          <textarea
-            placeholder={tools[activeTool].placeholder}
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            rows={6}
-            className="w-full p-3 rounded-lg border border-[#a855f7] bg-[#12131a] text-white text-base resize-vertical"
-          />
         ) : (
           <input
             type={tools[activeTool].inputType}
@@ -375,7 +305,9 @@ function SecuritySection() {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={handleScan}
-        disabled={isLoading || (!inputValue && tools[activeTool].inputType !== "file")}
+        disabled={
+          isLoading || (!inputValue && tools[activeTool].inputType !== "file")
+        }
         className={`w-full max-w-xs mx-auto block px-6 py-3 rounded-full font-bold ${
           isLoading
             ? "bg-gray-600 cursor-not-allowed"
@@ -386,26 +318,36 @@ function SecuritySection() {
       </motion.button>
 
       {result && (
-  <div className="mt-8 p-6 rounded-lg bg-[#12131a] text-center text-white">
-    {result.error ? (
-      <p className="text-red-400 font-semibold">Error: {result.error}</p>
-    ) : (
-      <>
-        <p
-          className={`text-2xl font-bold ${
-            result.is_phishing ? "text-red-500" : "text-green-400"
-          }`}
+        <div
+          className="mt-8 p-6 rounded-lg text-center"
+          style={{
+            backgroundColor: "#12131a",
+            border: `2px solid ${result.color || "#a855f7"}`,
+            boxShadow: `0 0 20px ${result.color || "#a855f7"}`,
+          }}
         >
-          {result.is_phishing ? "⚠️ Phishing Detected!" : "✅ Safe URL"}
-        </p>
-        <p className="text-sm mt-2 text-gray-400">
-          Confidence: {(result.confidence * 100).toFixed(2)}%
-        </p>
-      </>
-    )}
-  </div>
-)}
-
+          {result.error ? (
+            <p className="text-red-400 font-semibold">Error: {result.error}</p>
+          ) : (
+            <>
+              <p
+                className="text-2xl font-bold"
+                style={{ color: result.color || "#a855f7" }}
+              >
+                {result.status}
+              </p>
+              {result.score !== undefined && (
+                <p className="text-sm mt-2 text-gray-400">
+                  Confidence Score: {(result.score * 100).toFixed(1)}%
+                </p>
+              )}
+              {result.url && (
+                <p className="text-xs mt-1 text-gray-500">{result.url}</p>
+              )}
+            </>
+          )}
+        </div>
+      )}
     </section>
   );
 }
@@ -414,10 +356,20 @@ function SecuritySection() {
 export default function App() {
   const [loaded, setLoaded] = useState(false);
 
+  useEffect(() => {
+    // Simulate loading delay for assets
+    const timer = setTimeout(() => setLoaded(true), 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <>
       <Navbar />
-      {!loaded && <BufferingShield onComplete={() => setLoaded(true)} />}
+      {!loaded && (
+        <div className="flex justify-center items-center h-screen bg-[#0A0C14] text-[#a855f7] font-bold text-xl">
+          Loading...
+        </div>
+      )}
       {loaded && (
         <>
           <HeroSection />
