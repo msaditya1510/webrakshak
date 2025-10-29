@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 import numpy as np
 import joblib
@@ -10,22 +10,23 @@ import json
 # === Flask app setup ===
 app = Flask(__name__)
 
-# ✅ Correct CORS setup for both local + production
-CORS(app, supports_credentials=True, origins=[
+# ✅ Explicitly handle preflight OPTIONS requests
+CORS(app, supports_credentials=True, resources={r"/*": {"origins": [
     "https://webrakshak.vercel.app",
     "http://localhost:5173"
-])
+]}})
 
-@app.after_request
-def add_cors_headers(response):
-    origin = request.headers.get("Origin")
-    if origin in ["https://webrakshak.vercel.app", "http://localhost:5173"]:
-        response.headers["Access-Control-Allow-Origin"] = origin
+@app.before_request
+def handle_options():
+    if request.method == "OPTIONS":
+        response = make_response()
+        origin = request.headers.get("Origin")
+        if origin in ["https://webrakshak.vercel.app", "http://localhost:5173"]:
+            response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
+        response.headers["Access-Control-Allow-Methods"] = "GET,POST,OPTIONS"
         response.headers["Vary"] = "Origin"
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
-    response.headers["Access-Control-Allow-Methods"] = "GET,POST,OPTIONS"
-    return response
-
+        return response, 200
 
 # === Model Paths ===
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
