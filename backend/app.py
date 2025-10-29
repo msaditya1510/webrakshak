@@ -10,18 +10,20 @@ import json
 # === Flask app setup ===
 app = Flask(__name__)
 
-CORS(app, resources={r"/*": {"origins": [
+# ✅ Correct CORS setup for both local + production
+CORS(app, supports_credentials=True, origins=[
     "https://webrakshak.vercel.app",
     "http://localhost:5173"
-]}})
+])
 
 @app.after_request
 def add_cors_headers(response):
     origin = request.headers.get("Origin")
     if origin in ["https://webrakshak.vercel.app", "http://localhost:5173"]:
-        response.headers.add("Access-Control-Allow-Origin", origin)
-    response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
-    response.headers.add("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Vary"] = "Origin"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
+    response.headers["Access-Control-Allow-Methods"] = "GET,POST,OPTIONS"
     return response
 
 
@@ -67,21 +69,18 @@ except Exception as e:
     input_details = output_details = None
 
 
-# === URL preprocessing (fixed) ===
+# === URL preprocessing ===
 def preprocess_url_features(url):
-    """
-    Convert a URL into a numeric vector matching the trained model's feature_names.
-    Uses a placeholder encoding for now (based on ASCII values).
-    """
+    """Convert a URL into numeric vector matching the trained model’s features."""
     import pandas as pd
 
     if not feature_names:
         raise ValueError("Feature names not loaded from model")
 
-    # Convert URL characters to numeric values
+    # Convert characters to numeric values
     numeric = [ord(c) % 32 for c in url.lower()]
 
-    # Adjust to match model’s expected feature length
+    # Adjust to feature count
     if len(numeric) < len(feature_names):
         numeric += [0] * (len(feature_names) - len(numeric))
     elif len(numeric) > len(feature_names):
