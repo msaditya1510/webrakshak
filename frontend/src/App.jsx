@@ -249,7 +249,8 @@ function SecuritySection() {
   const [result, setResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const BACKEND_URL = "https://cryptchat2.onrender.com";
+  // const BACKEND_URL = "https://cryptchat2.onrender.com";
+  const BACKEND_URL = "http://127.0.0.1:5000";
 
   const tools = {
     "url-scan": {
