@@ -142,7 +142,6 @@ except Exception as e:
     print("⚠️ URL model load failed:", e)
 
 
-# === URL scanning ===
 @app.route("/scan/url", methods=["POST"])
 def scan_url():
     data = request.get_json()
@@ -156,7 +155,7 @@ def scan_url():
         print(f"✅ Whitelisted domain detected: {url} ({matched_domain}) — Skipping model.")
         return jsonify({
             "url": url,
-            "label": "safe",
+            "label": "Benign",
             "confidence": 1.0,
             "status": "✅ Safe URL (Trusted Domain)",
             "color": "green"
@@ -171,20 +170,31 @@ def scan_url():
             outputs = url_model(**inputs)
             probs = torch.nn.functional.softmax(outputs.logits, dim=-1)
             pred_id = probs.argmax(dim=1).item()
-            pred_label = url_model.config.id2label[pred_id]
             confidence = float(probs[0][pred_id])
     except Exception as e:
         print("⚠️ URL prediction failed:", e)
         return jsonify({"error": str(e)}), 500
 
-    if pred_label.lower() in ["benign", "safe"]:
-        color, msg = "green", "✅ Safe URL"
-    elif pred_label.lower() in ["malicious", "phishing"]:
-        color, msg = "red", "🚨 Malicious or Phishing Detected!"
-    else:
-        color, msg = "yellow", "⚠️ Suspicious - Check Carefully"
+    # ✅ Expanded label map (handles 4-class or misaligned models safely)
+    label_map = {
+        0: "Benign",
+        1: "Defacement",
+        2: "Phishing",
+        3: "Phishing"  # treat LABEL_3 as Phishing (most likely malicious)
+    }
+    pred_label = label_map.get(pred_id, "Phishing")  # default fallback = Phishing
 
-    print(f"🔍 URL Scanned: {url} → {msg} ({confidence:.2f})")
+    # ✅ Message + color handling
+    if pred_label == "Benign":
+        color, msg = "green", "✅ Benign (Safe URL)"
+    elif pred_label == "Defacement":
+        color, msg = "yellow", "⚠️ Defacement Detected – Possible Website Tampering"
+    elif pred_label == "Phishing":
+        color, msg = "red", "🚨 Phishing Attempt Detected!"
+    else:
+        color, msg = "gray", f"⚠️ Unknown classification: {pred_label}" 
+
+    print(f"🔍 URL Scanned: {url} → {pred_label} ({confidence:.2f})")
 
     return jsonify({
         "url": url,
@@ -193,8 +203,6 @@ def scan_url():
         "status": msg,
         "color": color
     })
-
-
 # === Image scanning ===
 @app.route("/scan/image", methods=["POST"])
 def scan_image():
